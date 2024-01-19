@@ -61,17 +61,17 @@ export default function WelcomePage() {
       </div>
       <div className="h-[250px] w-full flex items-center p-6 justify-between">
         <div className=" h-full w-[25%] bg-red-300 overflow-hidden relative">
-          <Image src="/azure.png" fill />
+          <Image alt="NF" src="/azure.png" fill />
         </div>
         <Plus size={42} />
         <div className="h-full w-[25%] bg-red-300 overflow-hidden relative">
-          <Image src="/terraform.jpg" fill />
+          <Image alt="NF" src="/terraform.jpg" fill />
         </div>
         <Equal size={42} />
         <div className="h-full w-[25%] bg-red-300 overflow-hidden relative">
-          <Image src="/infra.jpg" fill />
+          <Image alt="NF" src="/infra.jpg" fill />
         </div>
       </div>
     </div>
-  );
+  );   
 }

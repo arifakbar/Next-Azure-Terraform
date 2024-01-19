@@ -9,8 +9,16 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
+import { toast } from "../ui/use-toast";
 
 export default function UserLinks({ user }) {
+  const handleLogout = async () => {
+    await signOut();
+    toast({
+      description: "Logged out successfully.",
+    });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -28,7 +36,7 @@ export default function UserLinks({ user }) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <button onClick={signOut}>Sign Out</button>
+          <button onClick={handleLogout}>Sign Out</button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

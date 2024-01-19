@@ -10,6 +10,7 @@ import { signIn } from "next-auth/react";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { LoadingSpinner } from "../loading-spinner";
+import { toast } from "../ui/use-toast";
 
 export default function LoginModal({ title }) {
   const [loading, setLoading] = useState(false);
@@ -19,6 +20,9 @@ export default function LoginModal({ title }) {
       setLoading(true);
       await signIn("github");
       setLoading(false);
+      toast({
+        description: "Logged In successfully",
+      });
     } catch (err) {
       setLoading(false);
       console.log(err);
