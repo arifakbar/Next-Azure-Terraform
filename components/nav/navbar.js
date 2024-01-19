@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSession, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 import { links } from "@/lib/info";
 import UserLinks from "./userlinks";
@@ -11,9 +11,9 @@ export default function Navbar() {
   const { data: session } = useSession();
   return (
     <div className="px-6 w-full h-[60px] flex items-center justify-between shadow-md">
-      <div className="flex flex-col justify-center items-center">
-        <p className="font-bold">Azure</p>
-        <p className="font-semibold text-red-500 -my-1">Terraform</p>
+      <div className="text-xl flex justify-center items-center">
+        <p className="text-xl font-bold">Terra</p>
+        <p className="ml-[2px] font-bold text-red-500 -my-1">Zure</p>
       </div>
       <div className="flex items-center justify-center gap-4">
         {links.map((l, i) => (
@@ -25,7 +25,11 @@ export default function Navbar() {
             {l.label}
           </Link>
         ))}
-        {session?.user ? <UserLinks user={session.user} /> : <LoginModal />}
+        {session?.user ? (
+          <UserLinks user={session.user} />
+        ) : (
+          <LoginModal title="signIn" />
+        )}
       </div>
     </div>
   );

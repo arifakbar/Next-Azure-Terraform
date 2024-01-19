@@ -11,7 +11,7 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import { LoadingSpinner } from "../loading-spinner";
 
-export default function LoginModal() {
+export default function LoginModal({ title }) {
   const [loading, setLoading] = useState(false);
 
   const handleGitHUBLogin = async () => {
@@ -28,11 +28,15 @@ export default function LoginModal() {
   return (
     <Dialog>
       <DialogTrigger className="text-sm font-semibold hover:text-red-500 transition-all">
-        Sign In
+        {title === "signIn" ? (
+          "Sign In"
+        ) : (
+          <p className="text-md text-red-500 cursor-pointer">Register</p>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Sign in to your Account and start workng.</DialogTitle>
+          <DialogTitle>Sign in to your Account and start working.</DialogTitle>
         </DialogHeader>
         <Separator className="bg-gray-300 w-full h-[2px]" />
         {loading ? (
