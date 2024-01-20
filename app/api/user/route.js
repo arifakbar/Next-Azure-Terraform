@@ -6,7 +6,9 @@ import User from "@/models/user";
 export async function GET(req, res) {
   try {
     const session = await getServerSession();
-    const user = await User.findOne({ email: session?.user?.email });
+    const user = await User.findOne({ email: session?.user?.email }).populate(
+      "subscriptions"
+    );
     if (!user)
       return NextResponse.json({ error: "User not found!", status: 404 });
     return NextResponse.json({ data: user, status: 200 });

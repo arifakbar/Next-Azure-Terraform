@@ -9,8 +9,10 @@ import { Separator } from "@radix-ui/react-dropdown-menu";
 import { signIn } from "next-auth/react";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import { LoadingSpinner } from "../loading-spinner";
 import { toast } from "../ui/use-toast";
+import Image from "next/image";
+
+import { LoadingSpinner } from "../loading-spinner";
 
 export default function LoginModal({ title }) {
   const [loading, setLoading] = useState(false);
@@ -40,7 +42,7 @@ export default function LoginModal({ title }) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Sign in to your Account and start working.</DialogTitle>
+          <DialogTitle className="text-center">Continue With</DialogTitle>
         </DialogHeader>
         <Separator className="bg-gray-300 w-full h-[2px]" />
         {loading ? (
@@ -48,10 +50,22 @@ export default function LoginModal({ title }) {
             <LoadingSpinner className="h-5 w-5" />
           </div>
         ) : (
-          <>
-            <Button onClick={handleGitHUBLogin}>Continue with Github</Button>
-            <Button variant="destructive">Continue with Google</Button>
-          </>
+          <div className="flex items-center justify-evenly">
+            <Button
+              onClick={handleGitHUBLogin}
+              className="flex flex-col items-center justify-center gap-2 h-[120px] w-[150px]"
+            >
+              <Image src="/github.png" height="50" width="50" alt="NF" />
+              <p>Github</p>
+            </Button>
+            <Button
+              variant="destructive"
+              className="flex flex-col items-center justify-center gap-2 h-[120px] w-[150px]"
+            >
+              <Image src="/google.webp" height="50" width="50" alt="NF" />
+              <p>Google</p>
+            </Button>
+          </div>
         )}
       </DialogContent>
     </Dialog>

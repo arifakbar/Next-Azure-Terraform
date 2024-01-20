@@ -1,19 +1,23 @@
 "use client";
 
-import { Separator } from "@radix-ui/react-dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import { LucideEdit } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { useDispatch } from "react-redux";
 
 import { LoadingSpinner } from "@/components/loading-spinner";
 import NewSubscriptionModal from "@/components/modals/new-subscription";
 import WelcomePage from "@/components/welcomePage";
-import axios from "axios";
+import { change } from "@/lib/redux/actions";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const [user, setUser] = useState({});
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   useEffect(() => {
     loadUser();
@@ -32,6 +36,14 @@ export default function Home() {
     }
   };
 
+  const handleClick = async (id, subscriptionName) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("sid", id);
+      dispatch(change(localStorage.getItem("sid")));
+    }
+    router.push(`/subscription`);
+  };
+
   return (
     <div className="h-[calc(100vh-60px)]">
       {user?.email ? (
@@ -47,15 +59,21 @@ export default function Home() {
               </h1>
               <div className="w-full flex items-end justify-between">
                 <p className="text-md font-semibold">Your Subscriptions</p>
-                <NewSubscriptionModal title="sign_in" />
+                <NewSubscriptionModal loadUser={loadUser} />
               </div>
-              <Separator className="h-[1px] w-full bg-gray-400" />
+              <Separator />
               <div className="flex flex-col gap-3 w-full overflow-y-auto h-[70vh] p-2">
                 {user?.subscriptions.length > 0 ? (
                   user?.subscriptions.map((s, i) => (
-                    <div key={i} className="flex gap-3">
+                    <div
+                      key={i}
+                      className="flex gap-3"
+                      onClick={() => handleClick(s._id, s.subscriptionName)}
+                    >
                       <div className="w-[98%] cursor-pointer rounded-md shadow-md border-2 border-gray-500 p-3 flex items-center justify-between hover:bg-gray-200 transition-all">
-                        <p className="text-sm font-semibold">{s}</p>
+                        <p className="text-sm font-semibold">
+                          {s.subscriptionName}
+                        </p>
                       </div>
                       <div className="cursor-pointer rounded-md shadow-md border-2 border-gray-500 p-3 flex items-center justify-between hover:bg-gray-200 transition-all">
                         <LucideEdit size={18} color="green" />
