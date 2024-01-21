@@ -1,6 +1,7 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/loading-spinner";
+import ResourceTabs from "@/components/tabs/resource";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -93,16 +94,7 @@ export default function Subscription() {
             <Button>Create New</Button>
           </div>
           <Separator />
-          <div>
-            {resourcesArray.map((r, i) => (
-              <div key={i}>
-                <ul>{r.type}</ul>
-                {r.names.map((n, j) => (
-                  <li key={j}>{n}</li>
-                ))}
-              </div>
-            ))}
-          </div>
+          <ResourceTabs resourcesArray={resourcesArray} />
         </div>
       )}
     </div>

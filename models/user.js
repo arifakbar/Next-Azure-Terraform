@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 
+import Subscription from "./subscription";
+
 const { Schema } = mongoose;
-const { ObjectId } = Schema;
+const { ObjectId } = Schema.Types;
 
 const userSchema = new Schema(
   {
@@ -21,7 +23,7 @@ const userSchema = new Schema(
     subscriptions: [
       {
         type: ObjectId,
-        ref: "Subscription",
+        ref: Subscription,
       },
     ],
     resources: [

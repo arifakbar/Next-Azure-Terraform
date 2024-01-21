@@ -65,12 +65,11 @@ export default function Home() {
               <div className="flex flex-col gap-3 w-full overflow-y-auto h-[70vh] p-2">
                 {user?.subscriptions?.length > 0 ? (
                   user?.subscriptions.map((s, i) => (
-                    <div
-                      key={i}
-                      className="flex gap-3"
-                      onClick={() => handleClick(s._id)}
-                    >
-                      <div className="w-[98%] cursor-pointer rounded-md shadow-md border-2 border-gray-500 p-3 flex items-center justify-between hover:bg-gray-200 transition-all">
+                    <div key={i} className="flex gap-3">
+                      <div
+                        className="w-[98%] cursor-pointer rounded-md shadow-md border-2 border-gray-500 p-3 flex items-center justify-between hover:bg-gray-200 transition-all"
+                        onClick={() => handleClick(s._id)}
+                      >
                         <p className="text-sm font-semibold">
                           {s.subscriptionName}
                         </p>
