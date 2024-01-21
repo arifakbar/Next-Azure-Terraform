@@ -1,5 +1,6 @@
 "use client";
 
+import ResourcesList from "@/components/list/resources";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import ResourceTabs from "@/components/tabs/resource";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,11 @@ export default function Subscription() {
     {
       type: "storageAccount",
       name: "SA01",
+      content: {},
+    },
+    {
+      type: "virtualNetwork",
+      name: "VNet01",
       content: {},
     },
   ];
@@ -89,12 +95,17 @@ export default function Subscription() {
               Id: {subscription?.subscriptionId}
             </p>
           </div>
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full gap-2">
             <Input placeholder="Search..." className="w-[350px]" />
             <Button>Create New</Button>
           </div>
           <Separator />
-          <ResourceTabs resourcesArray={resourcesArray} />
+          {resourcesArray.length < 1 ? (
+            <p>No resources created currently. Create some.</p>
+          ) : (
+            // <ResourceTabs resourcesArray={resourcesArray} />
+            <ResourcesList resourcesArray={resourcesArray} />
+          )}
         </div>
       )}
     </div>

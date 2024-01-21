@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { toast } from "../ui/use-toast";
 
 const formSchema = z.object({
   subscriptionName: z.string().min(2, "Name is required"),
@@ -45,6 +46,9 @@ export default function SubscriptionForm({ loadUser }) {
   const onSubmit = async (values) => {
     try {
       await axios.post("/api/subscription", values);
+      toast({
+        description: "Subscription added successfully.",
+      });
       form.reset();
       loadUser();
     } catch (err) {
