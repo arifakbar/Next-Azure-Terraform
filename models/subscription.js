@@ -36,7 +36,7 @@ const subscriptionSchema = new Schema(
       },
     ],
   },
-  { timeseries: true }
+  { timestamps: true }
 );
 
 export default mongoose.models.Subscription ||

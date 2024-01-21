@@ -36,7 +36,7 @@ export default function Home() {
     }
   };
 
-  const handleClick = async (id, subscriptionName) => {
+  const handleClick = async (id) => {
     if (typeof window !== "undefined") {
       localStorage.setItem("sid", id);
       dispatch(change(localStorage.getItem("sid")));
@@ -63,12 +63,12 @@ export default function Home() {
               </div>
               <Separator />
               <div className="flex flex-col gap-3 w-full overflow-y-auto h-[70vh] p-2">
-                {user?.subscriptions.length > 0 ? (
+                {user?.subscriptions?.length > 0 ? (
                   user?.subscriptions.map((s, i) => (
                     <div
                       key={i}
                       className="flex gap-3"
-                      onClick={() => handleClick(s._id, s.subscriptionName)}
+                      onClick={() => handleClick(s._id)}
                     >
                       <div className="w-[98%] cursor-pointer rounded-md shadow-md border-2 border-gray-500 p-3 flex items-center justify-between hover:bg-gray-200 transition-all">
                         <p className="text-sm font-semibold">
