@@ -1,6 +1,15 @@
 "use client";
 
-import ResourcesList from "@/components/list/resources";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
 import { LoadingSpinner } from "@/components/loading-spinner";
 import ResourceTabs from "@/components/tabs/resource";
 import { Button } from "@/components/ui/button";
@@ -9,56 +18,11 @@ import { Separator } from "@/components/ui/separator";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { resources } from "@/utils";
 
 export default function Subscription() {
   const [subscription, setSubscription] = useState({});
   const [loading, setLoading] = useState(false);
-
-  const resources = [
-    {
-      type: "resourceGroup",
-      name: "RG-01",
-      content: {},
-    },
-    {
-      type: "resourceGroup",
-      name: "RG-02",
-      content: {},
-    },
-    {
-      type: "virtualMachine",
-      name: "VM01",
-      content: {},
-    },
-    {
-      type: "virtualMachine",
-      name: "VM02",
-      content: {},
-    },
-    {
-      type: "storageAccount",
-      name: "SA01",
-      content: {},
-    },
-    {
-      type: "virtualNetwork",
-      name: "VNet01",
-      content: {},
-    },
-  ];
-
-  const resourcesByTypes = {};
-  resources.forEach((r) => {
-    if (resourcesByTypes.hasOwnProperty(r.type)) {
-      resourcesByTypes[r.type].push(r.name);
-    } else {
-      resourcesByTypes[r.type] = [r.name];
-    }
-  });
-  const resourcesArray = Object.keys(resourcesByTypes).map((type) => ({
-    type,
-    names: resourcesByTypes[type],
-  }));
 
   const sid = useSelector((state) => state.sub.sid);
 
@@ -100,14 +64,29 @@ export default function Subscription() {
             <Button>Create New</Button>
           </div>
           <Separator />
-          {resourcesArray.length < 1 ? (
+          {resources.length < 1 ? (
             <p>No resources created currently. Create some.</p>
           ) : (
-            // <ResourceTabs resourcesArray={resourcesArray} />
-            <ResourcesList resourcesArray={resourcesArray} />
+            <ResourceTabs resources={resources} />
           )}
         </div>
       )}
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }
