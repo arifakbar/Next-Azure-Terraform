@@ -19,10 +19,12 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { resources } from "@/utils";
+import Link from "next/link";
 
 export default function Subscription() {
   const [subscription, setSubscription] = useState({});
   const [loading, setLoading] = useState(false);
+  const [filterProducts, setFilterProducts] = useState([]);
 
   const sid = useSelector((state) => state.sub.sid);
 
@@ -35,13 +37,31 @@ export default function Subscription() {
       setLoading(true);
       const res = await axios.get(`/api/subscription/${sid}`);
       setSubscription(res.data.data);
-      console.log(res.data.data);
+      setFilterProducts(resources);
       setLoading(false);
     } catch (err) {
       setLoading(false);
       console.log(err);
     }
   };
+
+  const handleSearch = (e) => {
+    const inputValue = e.target.value.toLowerCase();
+
+    if (inputValue === "") {
+      setFilterProducts(resources);
+    } else {
+      const filterBySearch = resources.filter((item) =>
+        item.name.toLowerCase().includes(inputValue)
+      );
+      setFilterProducts(filterBySearch);
+    }
+  };
+
+  useEffect(() => {
+    // This useEffect ensures that setFilterProducts has completed before using the updated state
+    setFilterProducts(filterProducts);
+  }, [filterProducts]);
 
   return (
     <div className="p-6 w-full h-[calc(100vh-60px)]">
@@ -60,14 +80,20 @@ export default function Subscription() {
             </p>
           </div>
           <div className="flex items-center justify-between w-full gap-2">
-            <Input placeholder="Search..." className="w-[350px]" />
-            <Button>Create New</Button>
+            <Input
+              placeholder="Search..."
+              className="w-[350px]"
+              onChange={handleSearch}
+            />
+            <Link href="/resource">
+              <Button>Create New</Button>
+            </Link>
           </div>
           <Separator />
           {resources.length < 1 ? (
             <p>No resources created currently. Create some.</p>
           ) : (
-            <ResourceTabs resources={resources} />
+            <ResourceTabs resources={filterProducts} />
           )}
         </div>
       )}
