@@ -18,6 +18,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { toast } from "../ui/use-toast";
+<<<<<<< HEAD
 import { useState } from "react";
 import { LoadingSpinner } from "../loading-spinner";
 
@@ -29,6 +30,19 @@ const formSchema = z.object({
 export default function ResourceGroupForm({ type, sid }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+=======
+
+const formSchema = z.object({
+  subscriptionName: z.string().min(2, "Name is required"),
+  subscriptionId: z.string().min(2, "Subscription ID is required"),
+  tenantId: z.string().min(2, "Tenant ID is required"),
+  clientId: z.string().min(2, "Client ID is required"),
+  clientSecret: z.string().min(2, "Client Secret is required"),
+});
+
+export default function ResourceGroupForm({ loadUser }) {
+  const router = useRouter();
+>>>>>>> e9aca0c750f3a6c14b70edb8c1e866447685b554
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -38,6 +52,7 @@ export default function ResourceGroupForm({ type, sid }) {
     },
   });
 
+<<<<<<< HEAD
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values) => {
@@ -60,6 +75,13 @@ export default function ResourceGroupForm({ type, sid }) {
       <LoadingSpinner />
     </div>
   ) : (
+=======
+  const loading = form.formState.isSubmitting;
+
+  const onSubmit = async (values) => {};
+
+  return (
+>>>>>>> e9aca0c750f3a6c14b70edb8c1e866447685b554
     <div className="p-4 border-2 border-gray-200 shadow-md rounded-md w-[40%]">
       <h4 className="text-xl text-center font-bold mb-3 underline">
         Resource Group
@@ -75,7 +97,11 @@ export default function ResourceGroupForm({ type, sid }) {
                   <FormLabel>Resource Group Name</FormLabel>
                   <FormControl>
                     <Input
+<<<<<<< HEAD
                       disabled={isLoading}
+=======
+                      disabled={loading}
+>>>>>>> e9aca0c750f3a6c14b70edb8c1e866447685b554
                       {...field}
                       placeholder="Enter the resource group name"
                     />
@@ -92,7 +118,11 @@ export default function ResourceGroupForm({ type, sid }) {
                   <FormLabel>Location</FormLabel>
                   <FormControl>
                     <Input
+<<<<<<< HEAD
                       disabled={isLoading}
+=======
+                      disabled={loading}
+>>>>>>> e9aca0c750f3a6c14b70edb8c1e866447685b554
                       {...field}
                       placeholder="Enter the location"
                     />
@@ -103,13 +133,18 @@ export default function ResourceGroupForm({ type, sid }) {
             />
           </div>
           <DialogFooter className="mt-4">
+<<<<<<< HEAD
             <Button disabled={isLoading}>Create</Button>
+=======
+            <Button disabled={loading}>Create</Button>
+>>>>>>> e9aca0c750f3a6c14b70edb8c1e866447685b554
           </DialogFooter>
         </form>
       </Form>
     </div>
   );
 }
+<<<<<<< HEAD
 
 /*
   // Your React component or page
@@ -162,3 +197,5 @@ export default function YourComponent() {
 }
 
 */
+=======
+>>>>>>> e9aca0c750f3a6c14b70edb8c1e866447685b554
