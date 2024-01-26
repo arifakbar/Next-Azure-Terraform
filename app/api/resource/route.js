@@ -65,6 +65,27 @@ export async function POST(req, res) {
     console.log("Exec in progress.");
     const result = await terraformExec();
 
+    // Change the provder file to initial state.
+    providerData = await fs.promises.readFile(
+      "./terraform/_provider.tf",
+      "utf-8"
+    );
+    providerData = providerData.replace(
+      subscription.subscriptionId,
+      "@@subscription_id@@"
+    );
+    providerData = providerData.replace(subscription.tenantId, "@@tenant_id@@");
+    providerData = providerData.replace(subscription.clientId, "@@client_id@@");
+    providerData = providerData.replace(
+      subscription.clientSecret,
+      "@@client_secret@@"
+    );
+    await fs.promises.writeFile(
+      "./terraform/_provider.tf",
+      providerData,
+      "utf-8"
+    );
+
     console.log("Exec completed successfully.");
     console.log("RESULT:\n", result);
 

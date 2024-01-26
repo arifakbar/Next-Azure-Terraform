@@ -8,12 +8,8 @@ export default function ({ params }) {
   const sid = useSelector((state) => state.sub.sid);
 
   const RenderForm = () => {
-<<<<<<< HEAD
     if (type === "resourceGroup")
       return <ResourceGroupForm type={type} sid={sid} />;
-=======
-    if (type === "resourceGroup") return <ResourceGroupForm />;
->>>>>>> e9aca0c750f3a6c14b70edb8c1e866447685b554
   };
 
   return (
