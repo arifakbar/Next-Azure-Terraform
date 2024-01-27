@@ -5,14 +5,16 @@ import User from "@/models/user";
 import Subscription from "@/models/subscription";
 import { getServerSession } from "next-auth";
 import { terraformExec } from "@/lib/terraformExec";
+import { extractErrorCode } from "@/lib/extractCodeFromError";
 
 export async function POST(req, res) {
+  let values;
   try {
     const session = await getServerSession();
     const user = await User.findOne({ email: session.user.email });
     if (!user) return NextResponse.json({ error: "Unauthorized", status: 401 });
 
-    const values = await req.json();
+    values = await req.json();
     const subscription = await Subscription.findById(values.subscriptionId);
     if (!subscription) {
       return NextResponse.json({
@@ -57,7 +59,7 @@ export async function POST(req, res) {
     }
 
     await fs.promises.writeFile(
-      `./terraform/resources/${values.resourceName}.tf`,
+      `./terraform/${values.resourceName}.tf`,
       newFile,
       "utf-8"
     );
@@ -99,158 +101,16 @@ export async function POST(req, res) {
   } catch (error) {
     console.error("Error:", error);
 
-    // Handle errors or clean-up operations here
+    const resError = extractErrorCode(`${error.stderr}`);
+    if (resError === "StorageAccountAlreadyTaken") {
+      //delete the file
+      await fs.promises.unlink(`./terraform/${values.resourceName}.tf`);
+    }
 
     return NextResponse.json({
       error: "Resource creation failed.",
       status: 422,
+      error: error,
     });
   }
 }
-
-/*
-
-    // import { NextResponse } from "next/server";
-// const fs = require("fs");
-
-// import User from "@/models/user";
-// import Subscription from "@/models/subscription";
-// import { getServerSession } from "next-auth";
-// import { terraformExec } from "@/lib/terraformExec";
-
-// export async function POST(req, res) {
-//   try {
-//     const session = await getServerSession();
-//     const user = await User.findOne({ email: session.user.email });
-//     if (!user) return NextResponse.json({ error: "Unauthorized", status: 401 });
-
-//     const values = await req.json();
-//     // console.log("VALUES: ", values);
-//     const subscription = await Subscription.findById(values.subscriptionId);
-//     if (!subscription) {
-//       return NextResponse.json({
-//         error: "Subscription not found",
-//         status: 404,
-//       });
-//     }
-
-//     // Update the provider file
-//     fs.readFile("./terraform/_provider.tf", "utf-8", (err, data) => {
-//       if (err) {
-//         console.log(err);
-//       }
-
-//       data = data.replace("@@subscription_id@@", subscription.subscriptionId);
-//       data = data.replace("@@tenant_id@@", subscription.tenantId);
-//       data = data.replace("@@client_id@@", subscription.clientId);
-//       data = data.replace("@@client_secret@@", subscription.clientSecret);
-
-//       fs.writeFile("./terraform/_provider.tf", data, "utf-8", (error) => {
-//         if (error) {
-//           return console.log(error);
-//         }
-//       });
-//     });
-
-//     // Update or Create <resource_name>.tf file acc. to type and values
-//     fs.readFile(
-//       `./terraform/templates/${values.type}.tf`,
-//       "utf-8",
-//       (err, data) => {
-//         if (err) {
-//           console.log(err);
-//         }
-
-//         const bodyObject = values;
-//         let newFile = data;
-
-//         for (const key in bodyObject) {
-//           if (Object.hasOwnProperty.call(bodyObject, key)) {
-//             const value = bodyObject[key];
-
-//             if (key != "type") {
-//               newFile = newFile.replaceAll(`@@${key}@@`, `${value}`);
-//             }
-//           }
-//         }
-
-//         fs.writeFile(
-//           `./terraform/resources/${values.resourceName}.tf`,
-//           newFile,
-//           "utf-8",
-//           (error) => {
-//             if (error) {
-//               return console.log(error);
-//             }
-//           }
-//         );
-//       }
-//     );
-
-//     console.log("Exec in progress.");
-//     await terraformExec()
-//       .then(async (result) => {
-//         console.log("Exec completed successfully.");
-//         console.log("RESULT:\n", result);
-//         fs.readFile("./terraform/_provider.tf", "utf-8", (err, data) => {
-//           if (err) {
-//             console.log(err);
-//           }
-//           data = data.replace(
-//             subscription.subscriptionId,
-//             "@@subscription_id@@"
-//           );
-//           data = data.replace(subscription.tenantId, "@@tenant_id@@");
-//           data = data.replace(subscription.clientId, "@@client_id@@");
-//           data = data.replace(subscription.clientSecret, "@@client_secret@@");
-
-//           fs.writeFile("./terraform/_provider.tf", data, "utf-8", (error) => {
-//             if (error) {
-//               return console.log(error);
-//             }
-//           });
-//         });
-
-//         return NextResponse.json({
-//           msg: "Resource created successfully.",
-//           status: 201,
-//         });
-//       })
-//       .catch((error) => {
-//         //Delete file in case of error
-//         console.log("Exec completed unsuccessfully.");
-//         console.error("ERROR:\n", error);
-//         fs.readFile("./terraform/_provider.tf", "utf-8", (err, data) => {
-//           if (err) {
-//             console.log(err);
-//           }
-//           data = data.replace(
-//             subscription.subscriptionId,
-//             "@@subscription_id@@"
-//           );
-//           data = data.replace(subscription.tenantId, "@@tenant_id@@");
-//           data = data.replace(subscription.clientId, "@@client_id@@");
-//           data = data.replace(subscription.clientSecret, "@@client_secret@@");
-
-//           fs.writeFile("./terraform/_provider.tf", data, "utf-8", (error) => {
-//             if (error) {
-//               return console.log(error);
-//             }
-//           });
-//         });
-//         return NextResponse.json({
-//           error: "Resource creation failed.",
-//           status: 422,
-//         });
-//       });
-//   } catch (err) {
-//     console.log(err);
-//     return NextResponse.json({ error: "Internal Error", status: 500 });
-//   }
-//   return NextResponse.json({
-//     msg: "Done",
-//     status: 200,
-//   });
-// }
-
-*/
