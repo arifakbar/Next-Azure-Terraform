@@ -59,7 +59,6 @@ export default function ResourceGroupForm({ type, sid }) {
 
   const onSubmit = async (values) => {
     const newValues = { ...values, type, subscriptionId: sid };
-    // console.log(newValues);
     try {
       setLoading(true);
       const res = await axios.post("/api/resource", newValues);

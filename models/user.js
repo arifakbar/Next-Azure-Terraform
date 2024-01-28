@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 import Subscription from "./subscription";
+import Resource from "./resources";
 
 const { Schema } = mongoose;
 const { ObjectId } = Schema.Types;
@@ -29,7 +30,7 @@ const userSchema = new Schema(
     resources: [
       {
         type: ObjectId,
-        ref: "Resource",
+        ref: Resource,
       },
     ],
     organization: {

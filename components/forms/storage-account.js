@@ -26,10 +26,11 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { toast } from "../ui/use-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoadingSpinner } from "../loading-spinner";
 import { supportedLocations } from "@/utils";
 import { extractErrorCode } from "@/lib/extractCodeFromError";
+import { setRGLoc } from "@/lib/setRGLoc";
 
 const formSchema = z.object({
   resourceName: z
@@ -40,7 +41,6 @@ const formSchema = z.object({
       /^[a-z0-9]+$/,
       "Name can only include lowercase letters and numbers"
     ),
-  location: z.string().min(2, "Location is required"),
   rgName: z.string().min(2, "Resource Group is required"),
   saTier: z.string().min(2, "Account Tier is required"),
   saRepli: z.string().min(2, "Replication Type is required"),
@@ -49,13 +49,33 @@ const formSchema = z.object({
 export default function StorageAccountForm({ type, sid }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [rgDetails, setRGDetails] = useState([]);
+  const [selectedRG, setSelectedRG] = useState({});
+  const [selectedLoc, setSelectedLoc] = useState("");
+
+  useEffect(() => {
+    loadRGDetails();
+  }, []);
+
+  const loadRGDetails = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`/api/resource/${sid}/resourceGroup`);
+      setRGDetails(res.data.data);
+      setSelectedRG(setRGLoc(res.data.data));
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+    }
+  };
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       resourceName: "",
-      location: "",
-      rgName: "rg-01",
+      // location: "",
+      rgName: "",
       saTier: "Standard",
       saRepli: "LRS",
     },
@@ -64,8 +84,12 @@ export default function StorageAccountForm({ type, sid }) {
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values) => {
-    const newValues = { ...values, type, subscriptionId: sid };
-    // console.log(newValues);
+    const newValues = {
+      ...values,
+      type,
+      subscriptionId: sid,
+      location: selectedLoc,
+    };
     try {
       setLoading(true);
       const res = await axios.post("/api/resource", newValues);
@@ -78,7 +102,6 @@ export default function StorageAccountForm({ type, sid }) {
             title: "Storage Account Already Taken",
             description: "Name is already present in Azure.",
           });
-        // console.log(extractErrorCode(`${res.data.error.stderr}`));
         setLoading(false);
         return;
       }
@@ -123,24 +146,29 @@ export default function StorageAccountForm({ type, sid }) {
             />
             <FormField
               control={form.control}
-              name="location"
+              name="rgName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel>Resource Group</FormLabel>
                   <FormControl>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedLoc(selectedRG[value]);
+                      }}
                       defaultValue={field.value}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select location" />
+                        <SelectValue placeholder="Select Resource Group" />
                       </SelectTrigger>
                       <SelectContent>
-                        {supportedLocations.map((l) => (
-                          <SelectItem key={l.code} value={l.code}>
-                            {l.name}
-                          </SelectItem>
-                        ))}
+                        {rgDetails.map((r) => {
+                          return (
+                            <SelectItem value={r.name} key={r._id}>
+                              {r.name}
+                            </SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -150,21 +178,18 @@ export default function StorageAccountForm({ type, sid }) {
             />
             <FormField
               control={form.control}
-              name="rgName"
+              name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Resource Group</FormLabel>
+                  <FormLabel>Location</FormLabel>
                   <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      {...field}
-                      placeholder="Enter the Resource Group Name"
-                    />
+                    <Input disabled {...field} value={selectedLoc} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="saTier"

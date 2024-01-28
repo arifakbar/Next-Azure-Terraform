@@ -6,6 +6,7 @@ import Subscription from "@/models/subscription";
 import { getServerSession } from "next-auth";
 import { terraformExec } from "@/lib/terraformExec";
 import { extractErrorCode } from "@/lib/extractCodeFromError";
+import Resource from "@/models/resources";
 
 export async function POST(req, res) {
   let values;
@@ -92,6 +93,28 @@ export async function POST(req, res) {
     console.log("RESULT:\n", result);
 
     // Additional handling or DB operations here
+
+    const { resourceName, type, subscriptionId, ...details } = values;
+
+    const resource = new Resource({
+      name: resourceName,
+      type: type,
+      subscriptionId: subscription._id,
+      details: details,
+    });
+    await resource.save();
+
+    await User.findByIdAndUpdate(user._id, {
+      $push: {
+        resources: resource._id,
+      },
+    });
+
+    await Subscription.findByIdAndUpdate(subscription._id, {
+      $push: {
+        resources: resource._id,
+      },
+    });
 
     return NextResponse.json({
       msg: "Resource created successfully.",
