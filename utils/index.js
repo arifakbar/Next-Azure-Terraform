@@ -82,8 +82,8 @@ export const availableResources = [
   },
   {
     id: 5,
-    name: "Key Vaults",
-    type: "keyVaults",
+    name: "Key Vault",
+    type: "keyVault",
     image:
       "https://azure.microsoft.com/svghandler/key-vault/?width=600&height=315",
     description: "A cloud service that provides a secure store for secrets.",

@@ -1,3 +1,5 @@
+//The name must begin with a letter or number, end with a letter, number or underscore, and may contain only letters, numbers, underscores, periods, or hyphens.
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -35,18 +37,17 @@ import { setRGLoc } from "@/lib/setRGLoc";
 const formSchema = z.object({
   resourceName: z
     .string()
-    .min(3, "Name is required")
-    .max(24, "Name cannot be more than 24 characters long")
+    .min(2, "Name is required")
     .regex(
-      /^[a-z0-9]+$/,
-      "Name can only include lowercase letters and numbers"
+      /^[a-zA-Z0-9][a-zA-Z0-9_.-]*[a-zA-Z0-9]$/,
+      "Name must begin with a letter or number, end with a letter, number, or underscore, and may contain only letters, numbers, underscores, periods, or hyphens"
     ),
   rgName: z.string().min(2, "Resource Group is required"),
-  saTier: z.string().min(2, "Account Tier is required"),
-  saRepli: z.string().min(2, "Replication Type is required"),
+  addSpace: z.string().min(2, "Account Tier is required"),
+  dnsServers: z.string().optional(),
 });
 
-export default function StorageAccountForm({ type, sid }) {
+export default function SubnetForm({ type, sid }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
@@ -77,14 +78,24 @@ export default function StorageAccountForm({ type, sid }) {
       resourceName: "",
       // location: "",
       rgName: "",
-      saTier: "Standard",
-      saRepli: "LRS",
+      addSpace: "",
+      dnsServers: "",
     },
   });
 
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values) => {
+    if (values.dnsServers.length > 0) {
+      let outputString = values.dnsServers;
+      outputString = outputString.split(",").map((ds) => ds.trim());
+      outputString = outputString.map((ip) => '"' + ip + '"').join(",");
+      outputString = outputString.slice(1, -1);
+      values.dnsServers = outputString;
+    } else {
+      values.dnsServers = [];
+      // type = "virtualNetwork2";
+    }
     const newValues = {
       ...values,
       type,
@@ -94,15 +105,12 @@ export default function StorageAccountForm({ type, sid }) {
     try {
       setLoading(true);
       const res = await axios.post("/api/resource", newValues);
-      console.log("DATA: ", res.data);
       if (res.data.error) {
         const resError = extractErrorCode(`${res.data.error.stderr}`);
-        if (resError === "StorageAccountAlreadyTaken")
-          toast({
-            variant: "destructive",
-            title: "Storage Account Already Taken",
-            description: "Name is already present in Azure.",
-          });
+        toast({
+          variant: "destructive",
+          description: resError,
+        });
         setLoading(false);
         return;
       }
@@ -127,9 +135,7 @@ export default function StorageAccountForm({ type, sid }) {
     </div>
   ) : (
     <div className="p-4 border-2 border-gray-200 shadow-md rounded-md w-[40%]">
-      <h4 className="text-xl text-center font-bold mb-3 underline">
-        Storage Account
-      </h4>
+      <h4 className="text-xl text-center font-bold mb-3 underline">Subnet</h4>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-2">
@@ -138,7 +144,7 @@ export default function StorageAccountForm({ type, sid }) {
               name="resourceName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Storage Account Name</FormLabel>
+                  <FormLabel>Virtual Network Name</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isLoading}
@@ -195,26 +201,14 @@ export default function StorageAccountForm({ type, sid }) {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
-              name="saTier"
+              name="addSpace"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Account Tier</FormLabel>
+                  <FormLabel>Address Space</FormLabel>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Standard" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Standard">Standard</SelectItem>
-                        <SelectItem value="Premium">Premium</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Input {...field} placeholder="Enter Address Space" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -222,27 +216,15 @@ export default function StorageAccountForm({ type, sid }) {
             />
             <FormField
               control={form.control}
-              name="saRepli"
+              name="dnsServers"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Replication Type</FormLabel>
+                  <FormLabel>DNS Servers (optional)</FormLabel>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="LRS" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="LRS">LRS</SelectItem>
-                        <SelectItem value="ZRS">ZRS</SelectItem>
-                        <SelectItem value="GRS">GRS</SelectItem>
-                        <SelectItem value="RAGRS">RAGRS</SelectItem>
-                        <SelectItem value="GZRS">GZRS</SelectItem>
-                        <SelectItem value="RAGZRS">RAGZRS</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      {...field}
+                      placeholder="Enter DNS Servers(seprated by comma)"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

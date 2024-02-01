@@ -1,7 +1,9 @@
 "use client";
 
+import KeyVaultForm from "@/components/forms/key-vault";
 import ResourceGroupForm from "@/components/forms/resource-group";
 import StorageAccountForm from "@/components/forms/storage-account";
+import VirtualNetworkForm from "@/components/forms/virtual-network";
 import { useSelector } from "react-redux";
 
 export default function ({ params }) {
@@ -13,6 +15,9 @@ export default function ({ params }) {
       return <ResourceGroupForm type={type} sid={sid} />;
     else if (type === "storageAccount")
       return <StorageAccountForm type={type} sid={sid} />;
+    else if (type === "virtualNetwork")
+      return <VirtualNetworkForm type={type} sid={sid} />;
+    else if (type === "keyVault") return <KeyVaultForm type={type} sid={sid} />;
   };
 
   return (

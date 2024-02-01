@@ -16,6 +16,7 @@ export async function POST(req, res) {
     if (!user) return NextResponse.json({ error: "Unauthorized", status: 401 });
 
     values = await req.json();
+
     const subscription = await Subscription.findById(values.subscriptionId);
     if (!subscription) {
       return NextResponse.json({
@@ -50,12 +51,17 @@ export async function POST(req, res) {
       `./terraform/templates/${values.type}.tf`,
       "utf-8"
     );
+
     let newFile = templateData;
 
     for (const key in values) {
       if (Object.hasOwnProperty.call(values, key) && key !== "type") {
         const value = values[key];
-        newFile = newFile.replaceAll(`@@${key}@@`, `${value}`);
+        if (key === "dnsServers" && value.length < 1) {
+          newFile = newFile.replace(`["@@dnsServers@@"]`, "[]");
+        } else {
+          newFile = newFile.replaceAll(`@@${key}@@`, `${value}`);
+        }
       }
     }
 

@@ -28,25 +28,30 @@ import axios from "axios";
 import { toast } from "../ui/use-toast";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "../loading-spinner";
-import { supportedLocations } from "@/utils";
 import { extractErrorCode } from "@/lib/extractCodeFromError";
 import { setRGLoc } from "@/lib/setRGLoc";
+import { Checkbox } from "../ui/checkbox";
 
 const formSchema = z.object({
   resourceName: z
     .string()
     .min(3, "Name is required")
-    .max(24, "Name cannot be more than 24 characters long")
     .regex(
-      /^[a-z0-9]+$/,
-      "Name can only include lowercase letters and numbers"
+      /^[a-zA-Z][a-zA-Z0-9-]*$/,
+      "Name must only contain alphanumeric characters and dashes, and cannot start with a number"
     ),
   rgName: z.string().min(2, "Resource Group is required"),
-  saTier: z.string().min(2, "Account Tier is required"),
-  saRepli: z.string().min(2, "Replication Type is required"),
+  diskEnc: z.boolean().default(false).optional(),
+  softDelete: z.coerce
+    .number()
+    .min(7, "Cannot be less than 7")
+    .max(90, "Cannot be more than 90"),
+  purgeProtect: z.boolean().default(false).optional(),
+  skuName: z.string().min(2, "SKU name is required"),
+  rbacAuth: z.boolean().default(false).optional(),
 });
 
-export default function StorageAccountForm({ type, sid }) {
+export default function KeyVaultForm({ type, sid }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
@@ -75,10 +80,12 @@ export default function StorageAccountForm({ type, sid }) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       resourceName: "",
-      // location: "",
       rgName: "",
-      saTier: "Standard",
-      saRepli: "LRS",
+      diskEnc: false,
+      softDelete: 7,
+      purgeProtect: false,
+      skuName: "Standard",
+      rbacAuth: false,
     },
   });
 
@@ -91,28 +98,27 @@ export default function StorageAccountForm({ type, sid }) {
       subscriptionId: sid,
       location: selectedLoc,
     };
-    try {
-      setLoading(true);
-      const res = await axios.post("/api/resource", newValues);
-      console.log("DATA: ", res.data);
-      if (res.data.error) {
-        const resError = extractErrorCode(`${res.data.error.stderr}`);
-        if (resError === "StorageAccountAlreadyTaken")
-          toast({
-            variant: "destructive",
-            title: "Storage Account Already Taken",
-            description: "Name is already present in Azure.",
-          });
-        setLoading(false);
-        return;
-      }
-      setLoading(false);
-      toast({ description: res.data.msg });
-      form.reset();
-    } catch (err) {
-      console.log(err);
-      setLoading(false);
-    }
+    console.log(newValues);
+    // try {
+    //   setLoading(true);
+    //   const res = await axios.post("/api/resource", newValues);
+    //   console.log("DATA: ", res.data);
+    //   if (res.data.error) {
+    //     const resError = extractErrorCode(`${res.data.error.stderr}`);
+    //     toast({
+    //       variant: "destructive",
+    //       description: resError,
+    //     });
+    //     setLoading(false);
+    //     return;
+    //   }
+    //   setLoading(false);
+    //   toast({ description: res.data.msg });
+    //   form.reset();
+    // } catch (err) {
+    //   console.log(err);
+    //   setLoading(false);
+    // }
   };
 
   return loading2 ? (
@@ -128,7 +134,7 @@ export default function StorageAccountForm({ type, sid }) {
   ) : (
     <div className="p-4 border-2 border-gray-200 shadow-md rounded-md w-[40%]">
       <h4 className="text-xl text-center font-bold mb-3 underline">
-        Storage Account
+        Key Vault
       </h4>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -138,7 +144,7 @@ export default function StorageAccountForm({ type, sid }) {
               name="resourceName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Storage Account Name</FormLabel>
+                  <FormLabel>Key Vault Name</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isLoading}
@@ -195,13 +201,63 @@ export default function StorageAccountForm({ type, sid }) {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
-              name="saTier"
+              name="diskEnc"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow mt-1">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Disk encryption</FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="purgeProtect"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow mt-1">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Purge Protection</FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="rbacAuth"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow mt-1">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>RBAC Authentication</FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="skuName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Account Tier</FormLabel>
+                  <FormLabel>Pricing Tier</FormLabel>
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
@@ -222,27 +278,12 @@ export default function StorageAccountForm({ type, sid }) {
             />
             <FormField
               control={form.control}
-              name="saRepli"
+              name="softDelete"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Replication Type</FormLabel>
+                  <FormLabel>Soft Delete retention days</FormLabel>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="LRS" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="LRS">LRS</SelectItem>
-                        <SelectItem value="ZRS">ZRS</SelectItem>
-                        <SelectItem value="GRS">GRS</SelectItem>
-                        <SelectItem value="RAGRS">RAGRS</SelectItem>
-                        <SelectItem value="GZRS">GZRS</SelectItem>
-                        <SelectItem value="RAGZRS">RAGZRS</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Input disabled={isLoading} type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
