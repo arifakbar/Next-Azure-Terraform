@@ -1,13 +1,12 @@
 "use client";
 
 import { Separator } from "@/components/ui/separator";
-import { LucideEdit } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 
 import { LoadingSpinner } from "@/components/loading-spinner";
-import NewSubscriptionModal from "@/components/modals/new-subscription";
+import SubscriptionModal from "@/components/modals/subscription";
 import WelcomePage from "@/components/welcomePage";
 import { change } from "@/lib/redux/actions";
 import { useRouter } from "next/navigation";
@@ -59,23 +58,39 @@ export default function Home() {
               </h1>
               <div className="w-full flex items-end justify-between">
                 <p className="text-md font-semibold">Your Subscriptions</p>
-                <NewSubscriptionModal loadUser={loadUser} />
+                <SubscriptionModal type="new" loadUser={loadUser} />
               </div>
               <Separator />
-              <div className="flex flex-col gap-3 w-full overflow-y-auto h-[70vh] p-2">
+              <div className="flex flex-wrap gap-3 w-full p-2 justify-center md:justify-start">
                 {user?.subscriptions?.length > 0 ? (
                   user?.subscriptions.map((s, i) => (
-                    <div key={i} className="flex gap-3">
+                    <div key={i} className="flex flex-col gap-3 mb-4">
                       <div
-                        className="w-[98%] cursor-pointer rounded-md shadow-md border-2 border-gray-500 p-3 flex items-center justify-between hover:bg-gray-200 transition-all"
+                        className="cursor-pointer border-2 rounded-md flex flex-col gap-2 items-start shadow-md px-6 py-4 hover:bg-gray-100 transition-all"
                         onClick={() => handleClick(s._id)}
                       >
                         <p className="text-sm font-semibold">
-                          {s.subscriptionName}
+                          Name: {s.subscriptionName}
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          Id: {s.subscriptionId}
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          Total Resources: {s.resources.length}
                         </p>
                       </div>
-                      <div className="cursor-pointer rounded-md shadow-md border-2 border-gray-500 p-3 flex items-center justify-between hover:bg-gray-200 transition-all">
-                        <LucideEdit size={18} color="green" />
+                      <div className="flex w-full gap-2 items-center justify-between">
+                        <SubscriptionModal
+                          type="edit"
+                          loadUser={loadUser}
+                          id={s?._id}
+                        />
+                        <SubscriptionModal
+                          type="delete"
+                          loadUser={loadUser}
+                          id={s?._id}
+                          name={s?.subscriptionName}
+                        />
                       </div>
                     </div>
                   ))

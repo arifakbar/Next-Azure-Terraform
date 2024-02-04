@@ -31,7 +31,7 @@ export default function UserLinks({ user }) {
         <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Link href="/user/profile/1" className="cursor-pointer">
+          <Link href="/user/profile" className="cursor-pointer">
             Account
           </Link>
         </DropdownMenuItem>

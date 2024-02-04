@@ -27,7 +27,7 @@ const formSchema = z.object({
   clientSecret: z.string().min(2, "Client Secret is required"),
 });
 
-export default function SubscriptionForm({ loadUser }) {
+export default function NewSubscriptionForm({ loadUser }) {
   const router = useRouter();
 
   const form = useForm({

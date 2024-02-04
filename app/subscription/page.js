@@ -97,7 +97,7 @@ export default function Subscription() {
           )}
         </div>
       )}
-      <Pagination>
+      {/* <Pagination>
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious href="#" />
@@ -112,7 +112,7 @@ export default function Subscription() {
             <PaginationNext href="#" />
           </PaginationItem>
         </PaginationContent>
-      </Pagination>
+      </Pagination> */}
     </div>
   );
 }
