@@ -25,6 +25,7 @@ export default function Subscription() {
   const [subscription, setSubscription] = useState({});
   const [loading, setLoading] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
+  const [keepProducts, setKeppProducts] = useState([]);
 
   const sid = useSelector((state) => state.sub.sid);
 
@@ -37,7 +38,9 @@ export default function Subscription() {
       setLoading(true);
       const res = await axios.get(`/api/subscription/${sid}`);
       setSubscription(res.data.data);
-      setFilterProducts(resources);
+      console.log(res.data.data);
+      setFilterProducts(res.data.data.resources);
+      setKeppProducts(res.data.data.resources);
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -47,11 +50,10 @@ export default function Subscription() {
 
   const handleSearch = (e) => {
     const inputValue = e.target.value.toLowerCase();
-
     if (inputValue === "") {
-      setFilterProducts(resources);
+      setFilterProducts(keepProducts);
     } else {
-      const filterBySearch = resources.filter((item) =>
+      const filterBySearch = keepProducts.filter((item) =>
         item.name.toLowerCase().includes(inputValue)
       );
       setFilterProducts(filterBySearch);

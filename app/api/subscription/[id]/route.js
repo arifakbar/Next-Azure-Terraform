@@ -11,7 +11,7 @@ export async function GET(req, { params }) {
     if (!session.user)
       return NextResponse.json({ error: "Unauthenticated", status: 401 });
 
-    const sub = await Subscription.findById(id);
+    const sub = await Subscription.findById(id).populate("resources");
     if (!sub)
       return NextResponse.json({
         error: "No Subscription found!",

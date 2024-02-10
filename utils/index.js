@@ -150,3 +150,26 @@ export const supportedLocations = [
   { code: "ukwest", name: "UK West" },
   { code: "canadaeast", name: "Canada East" },
 ];
+
+export const detailsDisplayNames = [
+  {
+    name: "rgName",
+    displayName: "Resource Group",
+  },
+  {
+    name: "dnsServers",
+    displayName: "DNS Servers",
+  },
+  {
+    name: "addSpace",
+    displayName: "Address Space",
+  },
+  {
+    name: "saTier",
+    displayName: "Account Tier",
+  },
+  {
+    name: "saRepli",
+    displayName: "Replication Type",
+  },
+];

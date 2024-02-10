@@ -40,9 +40,9 @@ export default function ResourceTabs({ resources }) {
           {resources.map((r) => {
             return (
               <div
-                key={r.id}
+                key={r._id}
                 className="w-full flex items-center justify-between gap-3"
-                onClick={() => router.push(`/resource/${r.id}`)}
+                onClick={() => router.push(`/resource/${r._id}`)}
               >
                 <p className="w-full shadow-md p-2 rounded-md my-2 cursor-pointer border-2 text-sm font-semibold text-gray-500">
                   {r.name}
