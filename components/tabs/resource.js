@@ -42,9 +42,11 @@ export default function ResourceTabs({ resources }) {
               <div
                 key={r._id}
                 className="w-full flex items-center justify-between gap-3"
-                onClick={() => router.push(`/resource/${r._id}`)}
               >
-                <p className="w-full shadow-md p-2 rounded-md my-2 cursor-pointer border-2 text-sm font-semibold text-gray-500">
+                <p
+                  className="w-full shadow-md p-2 rounded-md my-2 cursor-pointer border-2 text-sm font-semibold text-gray-500"
+                  onClick={() => router.push(`/resource/${r._id}`)}
+                >
                   {r.name}
                 </p>
                 <button className="shadow-md p-2 rounded-md cursor-pointer border-2 text-sm font-semibold text-green-500">

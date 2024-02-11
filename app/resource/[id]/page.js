@@ -44,31 +44,34 @@ export default function Resource({ params }) {
           <LoadingSpinner className="h-8 w-8" />
         </div>
       ) : (
-        <div className="flex gap-3 p-4">
-          <div className="flex flex-col gap-3 w-[50%]">
-            <h4 className="text-xl font-bold underline">
-              {resource.type && camelCaseToCapitalizeWithSpace(resource.type)}
-            </h4>
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-2">
-                <p className="font-semibold">Name</p>: <p>{resource?.name}</p>
+        <div className="flex flex-col gap-3 md:p-4 p-2">
+          <h4 className="text-2xl font-bold underline text-center my-4">
+            {resource.type && camelCaseToCapitalizeWithSpace(resource.type)}
+          </h4>
+          <div className="flex justify-evenly gap-3 flex-col">
+            <div className="flex flex-col gap-3 ">
+              <h4 className="text-xl font-bold underline">Details:</h4>
+              <div className="flex flex-col gap-2 shadow-md px-2 md:px-8 py-3 rounded-md border-2">
+                <div className="flex gap-2">
+                  <p className="font-semibold">Name</p>: <p>{resource?.name}</p>
+                </div>
+                <div className="flex gap-2">
+                  <p className="font-semibold">Subscription</p>:{" "}
+                  <p>{resource?.subscriptionId?.subscriptionName}</p>
+                </div>
+                <div className="flex gap-2">
+                  <p className="font-semibold">Subscription ID</p>:{" "}
+                  <p>{resource?.subscriptionId?.subscriptionId}</p>
+                </div>
+                {resource.details && returnDetails(resource.details)}
               </div>
-              <div className="flex gap-2">
-                <p className="font-semibold">Subscription</p>:{" "}
-                <p>{resource?.subscriptionId?.subscriptionName}</p>
-              </div>
-              <div className="flex gap-2">
-                <p className="font-semibold">Subscription ID</p>:{" "}
-                <p>{resource?.subscriptionId?.subscriptionId}</p>
-              </div>
-              {resource.details && returnDetails(resource.details)}
             </div>
-          </div>
-          <div className="flex flex-col gap-3 ">
-            <h4 className="text-xl font-bold underline">Terraform Code:</h4>
-            <pre className="shadow-md px-8 py-3 rounded-md border-2">
-              {content}
-            </pre>
+            <div className="flex flex-col gap-3 overflow-hidden">
+              <h4 className="text-xl font-bold underline">Terraform Code:</h4>
+              <div className="shadow-md whitespace-pre-wrap px-2 md:px-8 py-3 rounded-md border-2">
+                <pre className="whitespace-pre-wrap ">{content}</pre>
+              </div>
+            </div>
           </div>
         </div>
       )}
