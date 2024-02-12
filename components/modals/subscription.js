@@ -8,11 +8,24 @@ import {
 } from "@/components/ui/dialog";
 import { LucideEdit, Plus, Trash2 } from "lucide-react";
 import { Separator } from "../ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import NewSubscriptionForm from "../forms/new-subscription";
 import EditSubscriptionForm from "../forms/edit-subscription";
 import DeleteSubscription from "../forms/delete-subscription";
 
-export default function SubscriptionModal({ type, loadUser, id, name }) {
+export default function SubscriptionModal({
+  type,
+  loadUser,
+  id,
+  name,
+  totalResources,
+}) {
   return (
     <Dialog>
       <DialogTrigger>
@@ -21,17 +34,57 @@ export default function SubscriptionModal({ type, loadUser, id, name }) {
             Add New <Plus size={16} />
           </div>
         )}
-        {type === "edit" && (
+        {totalResources == 0 && type === "edit" && (
           <div className="cursor-pointer gap-2 rounded-md shadow-md border-2 p-3 flex items-center justify-center hover:bg-gray-100 transition-all">
             <LucideEdit size={18} color="green" />
             <p className="text-sm text-gray-400 font-semibold">Edit</p>
           </div>
         )}
-        {type === "delete" && (
+        {totalResources > 0 && type === "edit" && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  disabled
+                  className="gap-2 rounded-md p-3 flex items-center justify-center bg-gray-200 cursor-not-allowed"
+                >
+                  <LucideEdit size={18} color="green" />
+                  <p className="text-sm text-gray-400 font-semibold">Edit</p>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[200px]">
+                <p className="text-gray-400">
+                  Delete all resources within subscription, to edit this.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+        {totalResources == 0 && type === "delete" && (
           <div className="cursor-pointer gap-2 rounded-md shadow-md border-2 p-3 flex items-center justify-center hover:bg-gray-100 transition-all">
             <Trash2 size={18} color="red" />
             <p className="text-sm text-gray-400 font-semibold">Delete</p>
           </div>
+        )}
+        {totalResources > 0 && type === "delete" && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  disabled
+                  className="gap-2 rounded-md p-3 flex items-center justify-center bg-gray-200 cursor-not-allowed"
+                >
+                  <Trash2 size={18} color="red" />
+                  <p className="text-sm text-gray-400 font-semibold">Delete</p>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[200px]">
+                <p className="text-gray-400">
+                  Delete all resources within subscription, to delete this.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </DialogTrigger>
       <DialogContent>
@@ -47,7 +100,7 @@ export default function SubscriptionModal({ type, loadUser, id, name }) {
             {type === "edit" &&
               "Please enter correct details to successfully create the resources."}
             {type === "delete" &&
-              `Are you sure you want to delete the subscription "${name}" ? You will not be able to manage any already created resources.`}
+              `Are you sure you want to delete the subscription "${name}" ?`}
           </DialogDescription>
         </DialogHeader>
         <Separator />
@@ -56,7 +109,7 @@ export default function SubscriptionModal({ type, loadUser, id, name }) {
           <EditSubscriptionForm loadUser={loadUser} id={id} />
         )}
         {type === "delete" && (
-          <DeleteSubscription loadUser={loadUser} id={id} />
+          <DeleteSubscription loadUser={loadUser} id={id} name={name} />
         )}
       </DialogContent>
     </Dialog>

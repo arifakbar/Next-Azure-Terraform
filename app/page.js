@@ -83,12 +83,14 @@ export default function Home() {
                         <SubscriptionModal
                           type="edit"
                           loadUser={loadUser}
+                          totalResources={s.resources.length}
                           id={s?._id}
                         />
                         <SubscriptionModal
                           type="delete"
                           loadUser={loadUser}
                           id={s?._id}
+                          totalResources={s.resources.length}
                           name={s?.subscriptionName}
                         />
                       </div>

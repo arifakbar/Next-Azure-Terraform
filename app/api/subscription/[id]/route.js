@@ -38,3 +38,28 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ error: "Internal Error", status: 500 });
   }
 }
+
+export async function DELETE(req, { params }) {
+  try {
+    const { id } = params;
+    const session = await getServerSession();
+    if (!session.user)
+      return NextResponse.json({ error: "Unauthenticated", status: 401 });
+    await User.findOneAndUpdate(
+      { email: session.user.email },
+      {
+        $pull: {
+          subscriptions: id,
+        },
+      }
+    );
+    await Subscription.findByIdAndDelete(id);
+    return NextResponse.json({
+      msg: "Subscription deleted successfully",
+      status: 201,
+    });
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json({ error: "Internal Error", status: 500 });
+  }
+}
