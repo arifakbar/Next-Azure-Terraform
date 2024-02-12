@@ -84,7 +84,7 @@ export default function KeyVaultForm({ type, sid }) {
       diskEnc: false,
       softDelete: 7,
       purgeProtect: false,
-      skuName: "Standard",
+      skuName: "standard",
       rbacAuth: false,
     },
   });
@@ -98,27 +98,29 @@ export default function KeyVaultForm({ type, sid }) {
       subscriptionId: sid,
       location: selectedLoc,
     };
-    console.log(newValues);
-    // try {
-    //   setLoading(true);
-    //   const res = await axios.post("/api/resource", newValues);
-    //   console.log("DATA: ", res.data);
-    //   if (res.data.error) {
-    //     const resError = extractErrorCode(`${res.data.error.stderr}`);
-    //     toast({
-    //       variant: "destructive",
-    //       description: resError,
-    //     });
-    //     setLoading(false);
-    //     return;
-    //   }
-    //   setLoading(false);
-    //   toast({ description: res.data.msg });
-    //   form.reset();
-    // } catch (err) {
-    //   console.log(err);
-    //   setLoading(false);
-    // }
+    // console.log(newValues);
+    try {
+      setLoading(true);
+      const res = await axios.post("/api/resource", newValues);
+      console.log("DATA: ", res.data);
+      if (res.data.error) {
+        const resError = extractErrorCode(`${res.data.error.stderr}`);
+        if (resError === "VaultAlreadyExists")
+          toast({
+            variant: "destructive",
+            title: "Key Vault Already Taken",
+            description: "Name is already present in Azure.",
+          });
+        setLoading(false);
+        return;
+      }
+      setLoading(false);
+      toast({ description: res.data.msg });
+      form.reset();
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+    }
   };
 
   return loading2 ? (
@@ -267,8 +269,8 @@ export default function KeyVaultForm({ type, sid }) {
                         <SelectValue placeholder="Standard" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Standard">Standard</SelectItem>
-                        <SelectItem value="Premium">Premium</SelectItem>
+                        <SelectItem value="standard">Standard</SelectItem>
+                        <SelectItem value="premium">Premium</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>

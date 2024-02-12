@@ -130,9 +130,11 @@ export async function POST(req, res) {
   } catch (error) {
     console.error("Error:", error);
 
+    //delete the file
     const resError = extractErrorCode(`${error.stderr}`);
     if (resError === "StorageAccountAlreadyTaken") {
-      //delete the file
+      await fs.promises.unlink(`./terraform/${values.resourceName}.tf`);
+    } else if (resError === "VaultAlreadyExists") {
       await fs.promises.unlink(`./terraform/${values.resourceName}.tf`);
     }
 

@@ -46,7 +46,9 @@ export default function Resource({ params }) {
       ) : (
         <div className="flex flex-col gap-3 md:p-4 p-2">
           <h4 className="text-2xl font-bold underline text-center my-4">
-            {resource.type && camelCaseToCapitalizeWithSpace(resource.type)}
+            {resource &&
+              resource.type &&
+              camelCaseToCapitalizeWithSpace(resource.type)}
           </h4>
           <div className="flex justify-evenly gap-3 flex-col">
             <div className="flex flex-col gap-3 ">

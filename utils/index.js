@@ -172,4 +172,24 @@ export const detailsDisplayNames = [
     name: "saRepli",
     displayName: "Replication Type",
   },
+  {
+    name: "diskEnc",
+    displayName: "Disk Encryption",
+  },
+  {
+    name: "softDelete",
+    displayName: "Days to retain deleted vaults",
+  },
+  {
+    name: "purgeProtect",
+    displayName: "Purge Protection",
+  },
+  {
+    name: "skuName",
+    displayName: "Sku (Pricing tier)",
+  },
+  {
+    name: "rbacAuth",
+    displayName: "Role-based access control",
+  },
 ];
